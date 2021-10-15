@@ -33,21 +33,19 @@ router.get('/:id', (req, res) => {
   Product.findOne({
     include: [
       {
-      model: Category,
-      attributes: ['category_name', 'id']
+      model: Category
     },
     {
         model: Tag,
         through: ProductTag,
         as: 'tags',
       }
-  ]
+  ], 
+  where: {
+    id: req.params.id
+  }
   })
   .then(dbProductData => {
-    if(!dbProductData) {
-      res.status(404).json({ message: 'No product found with that id' })
-      return;
-    }
     res.json(dbProductData);
   })
   .catch(err => {
@@ -67,7 +65,6 @@ router.post('/', (req, res) => {
       tagIds: [1, 2, 3, 4]
     }
   */
-//  TODO: check this!
   Product.create({
     product_name: req.body.product_name,
     price: req.body.price,
@@ -101,7 +98,7 @@ router.put('/:id', (req, res) => {
   Product.update(req.body, {
     where: {
       id: req.params.id,
-    },
+    }
   })
     .then((product) => {
       // find all associated tags from ProductTag
